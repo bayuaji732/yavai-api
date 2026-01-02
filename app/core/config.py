@@ -1,0 +1,49 @@
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+YAVAI_API_BASE_URL = os.environ.get("YAVAI_API_BASE_URL")
+    
+# Database
+PSQL_HOST = os.environ.get("PSQL_HOST")
+PSQL_DATABASE = os.environ.get("PSQL_DATABASE")
+PSQL_PORT = os.environ.get("PSQL_PORT")
+PSQL_USER = os.environ.get("PSQL_USER")
+PSQL_PASSWORD = os.environ.get("PSQL_PASSWORD")
+    
+# Redis
+REDIS_HOST = os.environ.get("REDIS_HOST")
+REDIS_PORT = os.environ.get("REDIS_PORT")
+REDIS_DB = os.environ.get("REDIS_DB")
+    
+# Spark
+SPARK_HOME = os.environ.get("SPARK_HOME")
+SPARK_JARS = os.environ.get("SPARK_JARS")
+SPARK_JARS_AWS = os.environ.get("SPARK_JARS_AWS")
+SPARK_JARS_TFRECORD = os.environ.get("SPARK_JARS_TFRECORD")
+SPARK_JARS_EXCEL = os.environ.get("SPARK_JARS_EXCEL")
+SPARK_HADOOP_HIVE_METASTORE_URIS = os.environ.get("SPARK_HADOOP_HIVE_METASTORE_URIS")
+SPARK_KERBEROS_KEYTAB = os.environ.get("SPARK_KERBEROS_KEYTAB")
+SPARK_KERBEROS_PRINCIPAL = os.environ.get("SPARK_KERBEROS_PRINCIPAL")
+SPARK_EXTRACLASSPATH = os.environ.get("SPARK_EXTRACLASSPATH")
+    
+# HDFS
+HDFS_HOST = os.environ.get("HDFS_HOST")
+HDFS_NAME_NODE = os.environ.get("HDFS_NAME_NODE")
+HDFS_SERVER = os.environ.get("HDFS_SERVER")
+HDFS_FUSE_MNT_DIR = os.environ.get("HDFS_FUSE_MNT_DIR")
+HIVE_DIR_PATH = os.environ.get("HIVE_DIR_PATH")
+HIVE_HIVESERVER2_JDBC_URL = os.environ.get("HIVE_HIVESERVER2_JDBC_URL")
+HIVE_METASTORE_JARS = os.environ.get("HIVE_METASTORE_JARS")
+    
+# S3
+S3_ACCESS_KEY = os.environ.get("S3_ACCESS_KEY")
+S3_SECRET_KEY = os.environ.get("S3_SECRET_KEY")
+S3_ENDPOINT = os.environ.get("S3_ENDPOINT")
+    
+# JWT
+JWT_TOKEN_KEY = os.environ.get("JWT_TOKEN_KEY")
+
+# DLIB Model
+SHAPE_PREDICTOR_PATH= os.environ.get("SHAPE_PREDICTOR_PATH")
