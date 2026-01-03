@@ -1,13 +1,10 @@
-import json
 import os
 import csv
-import regex
-import tempfile
 from fastapi import APIRouter, HTTPException, Response
-from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.responses import FileResponse
 from models.requests import FeatureGroupRequest, DownloadRequest, AddColumnRequest, FeatureGroupSizeRequest
 from services.feature_group_service import FeatureGroupService
-from services.spark_service import parse_feature_group_json, replace_boolean_string
+from services.spark_service import parse_feature_group_json
 from app.core.spark_config import create_spark_session
 from db.redis import get_redis_client
 from hdfs.ext.kerberos import KerberosClient

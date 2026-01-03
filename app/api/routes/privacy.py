@@ -1,12 +1,9 @@
 import os
 import json
-import tempfile
 import requests
-from typing import Tuple, Dict, Any
 from fastapi import APIRouter, HTTPException, Form
 from db.postgres import get_db_connection
 from services.privacy_service import PrivacyService
-from core import config
 
 router = APIRouter()
 service = PrivacyService()

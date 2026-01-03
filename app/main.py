@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from api.routes import feature_groups, training_datasets, datasets, privacy, imports
+from api.routes import feature_groups, training_datasets, datasets, privacy, imports, dataprep
 
-app = FastAPI(title="YavAI Feature Store API", version="1.0.0")
+app = FastAPI(title="YavAI API", version="2.0.0", description="API for feature store management and data profiling")
 
 app.add_middleware(
     CORSMiddleware,
@@ -17,7 +17,12 @@ app.include_router(training_datasets.router, prefix="/api/v1", tags=["training-d
 app.include_router(datasets.router, prefix="/api/v1", tags=["datasets"])
 app.include_router(privacy.router, prefix="/api/v1", tags=["privacy"])
 app.include_router(imports.router, prefix="/api/v1", tags=["imports"])
+app.include_router(dataprep.router, prefix="/api/v1", tags=["dataprep"])
 
 @app.get("/")
 async def root():
-    return {"message": "YavAI Feature Store API"}
+    return {"message": "YavAI API"}
+
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy"}

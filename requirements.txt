@@ -21,7 +21,7 @@ spacy==3.7.2
 
 # Image Processing
 opencv-python-headless==4.9.0.80
-# dlib==19.24.2
+dlib==19.24.2
 Pillow==10.2.0
 pillow-heif==0.15.0
 
@@ -42,3 +42,8 @@ regex==2023.12.25
 
 # HDFS
 hdfs[kerberos]==2.7.3
+
+ydata-profiling==4.18.0  # Core profiling library
+pandas-tfrecords==0.1.6  # TFRecord support
+pyhive[hive-pure-sasl]==0.7.0  # Hive connectivity
+python-dotenv==1.2.1

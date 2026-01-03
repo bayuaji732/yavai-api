@@ -47,3 +47,29 @@ JWT_TOKEN_KEY = os.environ.get("JWT_TOKEN_KEY")
 
 # DLIB Model
 SHAPE_PREDICTOR_PATH= os.environ.get("SHAPE_PREDICTOR_PATH")
+    
+# File settings
+URL: str = os.getenv("URL", "")
+URL2: str = os.getenv("URL2", "")  # Feature store URL
+URL3: str = os.getenv("URL3", "")  # Training dataset URL
+LOCAL_DIR: str = os.getenv("LOCAL_DIR", "/tmp/dataprep")
+
+# Hive settings (for feature store)
+HIVE_HOST: str = os.getenv("HIVE_HOST", "localhost")
+HIVE_PORT: int = int(os.getenv("HIVE_PORT", "10000"))
+HIVE_PRINCIPAL: str = os.getenv("HIVE_PRINCIPAL", "")
+HIVE_DATABASE: str = os.getenv("HIVE_DATABASE", "default")
+    
+# HDFS settings (for training datasets)
+HADOOP_HOME: str = os.getenv("HADOOP_HOME", "/usr/hadoop")
+HDFS_NAMENODE: str = os.getenv("HDFS_NAMENODE", "localhost")
+TICKET_CACHE_PATH: str = os.getenv("TICKET_CACHE_PATH", "/tmp/krb5cc_1062")
+    
+# Logging settings
+LOG_FILE_PATH: str = os.getenv("LOG_FILE_PATH", "logs/dataset.log")
+MAX_LOG_SIZE: int = 10 * 1024 * 1024  # 10 MB
+BACKUP_COUNT: int = 5
+    
+# API settings
+MAX_FILE_SIZE: int = 100 * 1024 * 1024  # 100 MB
+ALLOWED_FILE_TYPES: list = ['csv', 'tsv', 'xls', 'xlsx', 'sav']
