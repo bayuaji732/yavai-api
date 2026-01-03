@@ -20,8 +20,8 @@ logger = setup_logger(__name__)
 # DATASET ENDPOINTS
 # ============================================
 
-@router.post("/dataprep/process", response_model=DataPrepResponse, tags=["Dataset"])
-async def process_dataset(
+@router.post("/dataset/profiling", response_model=DataPrepResponse, tags=["Dataset"])
+async def run_dataset_profiling(
     request: DataPrepRequest,
     background_tasks: BackgroundTasks
 ):
@@ -63,8 +63,8 @@ async def process_dataset(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/dataprep/batch", response_model=DataPrepResponse, tags=["Dataset"])
-async def batch_process_datasets(
+@router.post("/dataset/profiling/batch", response_model=DataPrepResponse, tags=["Dataset"])
+async def run_dataset_profiling_batch(
     request: BatchDataPrepRequest,
     background_tasks: BackgroundTasks
 ):
@@ -94,8 +94,8 @@ async def batch_process_datasets(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/dataprep/status/{file_id}", tags=["Dataset"])
-async def get_processing_status(file_id: str, table_name: str = "dataset"):
+@router.get("/dataset/profiling/status/{file_id}", tags=["Dataset"])
+async def get_dataset_profiling_status(file_id: str, table_name: str = "dataset"):
     """
     Get the processing status of a dataset.
     
@@ -126,8 +126,8 @@ async def get_processing_status(file_id: str, table_name: str = "dataset"):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/dataprep/list", tags=["Dataset"])
-async def list_datasets(
+@router.get("/dataset/profiling/list", tags=["Dataset"])
+async def get_list_datasets(
     table_name: str = "dataset",
     status: Optional[int] = None,
     limit: int = 100,
@@ -161,8 +161,8 @@ async def list_datasets(
 # FEATURE STORE ENDPOINTS
 # ============================================
 
-@router.post("/dataprep/feature-store/process", response_model=FeatureGroupResponse, tags=["Feature Store"])
-async def process_feature_group(
+@router.post("/feature-groups/profiling", response_model=FeatureGroupResponse, tags=["Feature Store"])
+async def run_feature_group_profiling(
     request: FeatureGroupRequest,
     background_tasks: BackgroundTasks
 ):
@@ -196,8 +196,8 @@ async def process_feature_group(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/dataprep/feature-store/batch", response_model=FeatureGroupResponse, tags=["Feature Store"])
-async def batch_process_feature_groups(background_tasks: BackgroundTasks):
+@router.post("/feature-groups/profiling/batch", response_model=FeatureGroupResponse, tags=["Feature Store"])
+async def run_feature_group_profiling_batch(background_tasks: BackgroundTasks):
     """
     Process all pending feature groups.
     
@@ -221,8 +221,8 @@ async def batch_process_feature_groups(background_tasks: BackgroundTasks):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/dataprep/feature-store/status/{table_name}", tags=["Feature Store"])
-async def get_feature_group_status(table_name: str):
+@router.get("feature-groups/profiling/status/{table_name}", tags=["Feature Store"])
+async def get_feature_group_profiling_status(table_name: str):
     """
     Get the processing status of a feature group.
     
@@ -252,8 +252,8 @@ async def get_feature_group_status(table_name: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/dataprep/feature-store/list", tags=["Feature Store"])
-async def list_feature_groups(
+@router.get("/feature-groups/profiling/list", tags=["Feature Store"])
+async def get_list_feature_groups(
     status: Optional[int] = None,
     limit: int = 100,
     offset: int = 0
@@ -285,8 +285,8 @@ async def list_feature_groups(
 # TRAINING DATASET ENDPOINTS
 # ============================================
 
-@router.post("/dataprep/training-dataset/process", response_model=TrainingDatasetResponse, tags=["Training Dataset"])
-async def process_training_dataset(
+@router.post("/training-datasets/profiling", response_model=TrainingDatasetResponse, tags=["Training Dataset"])
+async def run_training_dataset_profiling(
     request: TrainingDatasetRequest,
     background_tasks: BackgroundTasks
 ):
@@ -321,8 +321,8 @@ async def process_training_dataset(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/dataprep/training-dataset/batch", response_model=TrainingDatasetResponse, tags=["Training Dataset"])
-async def batch_process_training_datasets(
+@router.post("/training-datasets/profiling/batch", response_model=TrainingDatasetResponse, tags=["Training Dataset"])
+async def run_training_datasets_profiling_batch(
     request: TrainingDatasetBatchRequest,
     background_tasks: BackgroundTasks
 ):
@@ -353,8 +353,8 @@ async def batch_process_training_datasets(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/dataprep/training-dataset/status/{td_id}", tags=["Training Dataset"])
-async def get_training_dataset_status(td_id: str):
+@router.get("/training-datasets/profiling/status/{td_id}", tags=["Training Dataset"])
+async def get_training_dataset_profiling_status(td_id: str):
     """
     Get the processing status of a training dataset.
     
@@ -384,8 +384,8 @@ async def get_training_dataset_status(td_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/dataprep/training-dataset/list", tags=["Training Dataset"])
-async def list_training_datasets(
+@router.get("/training-datasets/profiling/list", tags=["Training Dataset"])
+async def get_list_training_datasets(
     status: Optional[int] = None,
     dataset_format: Optional[str] = None,
     limit: int = 100,

@@ -11,8 +11,8 @@ from core import config
 router = APIRouter()
 spark_service = SparkService()
 
-@router.post("/import-csv")
-async def import_csv_to_hive(
+@router.post("/csv/import")
+async def import_csv(
     csv_file: UploadFile = File(...),
     app_name: str = Form(...),
     table_name: str = Form(...),
@@ -62,8 +62,8 @@ async def import_csv_to_hive(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.post("/insert-csv")
-async def insert_csv_to_existing_table(
+@router.post("/csv/append")
+async def append_csv(
     csv_file: UploadFile = File(...),
     app_name: str = Form(...),
     table_name: str = Form(...),
@@ -152,7 +152,7 @@ async def insert_csv_to_existing_table(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.post("/savtocsv")
+@router.post("/sav/convert-to-csv")
 async def convert_sav_to_csv(sav_file: UploadFile = File(...)):
     try:
         import pyreadstat

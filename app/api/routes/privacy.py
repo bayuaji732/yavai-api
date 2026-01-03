@@ -8,7 +8,7 @@ from services.privacy_service import PrivacyService
 router = APIRouter()
 service = PrivacyService()
 
-@router.post("/privacy-detection/{file_item_id}")
+@router.post("/{file_item_id}")
 async def privacy_detection(file_item_id: str, token: str = Form(...)):
     if not token:
         raise HTTPException(status_code=401, detail="Authentication token is required in form data")

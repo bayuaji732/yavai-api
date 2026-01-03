@@ -7,8 +7,8 @@ from app.core.spark_config import create_spark_session
 router = APIRouter()
 service = TrainingDatasetService()
 
-@router.post("/training-dataset-data")
-async def save_training_dataset_data(request: TrainingDatasetRequest):
+@router.post("/")
+async def create_training_dataset(request: TrainingDatasetRequest):
     if not request.app_token:
         raise HTTPException(status_code=401, detail="Request does not contain application token")
     
@@ -35,8 +35,8 @@ async def save_training_dataset_data(request: TrainingDatasetRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.post("/preview-training-dataset-data")
-async def preview_training_dataset_data(request: TrainingDatasetRequest):
+@router.post("/preview")
+async def preview_training_dataset(request: TrainingDatasetRequest):
     try:
         training_dataset_obj = parse_training_dataset_json(request.training_dataset)
         spark_session = create_spark_session(request.app_name)
@@ -57,8 +57,8 @@ async def preview_training_dataset_data(request: TrainingDatasetRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.post("/delete-training-dataset-data")
-async def delete_training_dataset_data(request: TrainingDatasetRequest):
+@router.post("/delete")
+async def delete_training_dataset(request: TrainingDatasetRequest):
     if not request.app_token:
         raise HTTPException(status_code=401, detail="Request does not contain application token")
     

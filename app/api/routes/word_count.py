@@ -9,8 +9,8 @@ stop_words_english = set(stopwords.words('english'))
 stop_words_indonesian = set(stopwords.words('indonesian'))
 stop_words = stop_words_english.union(stop_words_indonesian)
 
-@router.get("/dataset-word-count")
-async def dataset_word_count():
+@router.get("/datasets")
+async def get_datasets_word_count():
     try:
         with get_db_connection() as conn:
             cur = conn.cursor()
@@ -43,8 +43,8 @@ async def dataset_word_count():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/featurestore-word-count")
-async def featurestore_word_count():
+@router.get("/feature-groups")
+async def get_feature_groups_word_count():
     try:
         with get_db_connection() as conn:
             cur = conn.cursor()
@@ -77,8 +77,8 @@ async def featurestore_word_count():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/name-notebook-word-count")
-async def name_notebook_word_count():
+@router.get("/notebooks")
+async def get_notebooks_word_count():
     try:
         with get_db_connection() as conn:
             cur = conn.cursor()
@@ -103,8 +103,8 @@ async def name_notebook_word_count():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/filemanagement-word-count")
-async def filemanagement_word_count():
+@router.get("/filemanagement")
+async def get_filemanagement_word_count():
     try:
         with get_db_connection() as conn:
             cur = conn.cursor()
@@ -129,8 +129,8 @@ async def filemanagement_word_count():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/model-zoo-word-count")
-async def model_zoo_word_count():
+@router.get("/model-zoo")
+async def get_model_zoo_word_count():
     try:
         with get_db_connection() as conn:
             cur = conn.cursor()

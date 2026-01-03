@@ -13,8 +13,8 @@ from core import config
 router = APIRouter()
 service = FeatureGroupService()
 
-@router.post("/feature-group-data")
-async def save_feature_group_data(request: FeatureGroupRequest):
+@router.post("/")
+async def create_feature_group(request: FeatureGroupRequest):
     if not request.app_token:
         raise HTTPException(status_code=401, detail="Request does not contain application token")
     
@@ -38,8 +38,8 @@ async def save_feature_group_data(request: FeatureGroupRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.post("/preview-feature-group-data")
-async def preview_feature_group_data(request: FeatureGroupRequest):
+@router.post("/preview")
+async def preview_feature_group(request: FeatureGroupRequest):
     try:
         feature_group_obj = parse_feature_group_json(request.feature_group)
         spark_session = create_spark_session(request.app_name)
@@ -60,8 +60,8 @@ async def preview_feature_group_data(request: FeatureGroupRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.post("/download-feature-group-data")
-async def download_feature_group_data(request: DownloadRequest):
+@router.post("/download")
+async def download_feature_group(request: DownloadRequest):
     try:
         feature_group_obj = parse_feature_group_json(request.feature_group)
         online_mode = feature_group_obj.feature_group_online
@@ -101,8 +101,8 @@ async def download_feature_group_data(request: DownloadRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.post("/add-column-feature-group-data")
-async def add_column_feature_group_data(request: AddColumnRequest):
+@router.post("/add-column")
+async def add_column_feature_group(request: AddColumnRequest):
     try:
         feature_group_obj = parse_feature_group_json(request.feature_group)
         spark_session = create_spark_session(request.app_name)
@@ -122,8 +122,8 @@ async def add_column_feature_group_data(request: AddColumnRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.post("/delete-feature-group-data")
-async def delete_feature_group_data(request: FeatureGroupRequest):
+@router.post("/delete")
+async def delete_feature_group(request: FeatureGroupRequest):
     if not request.app_token:
         raise HTTPException(status_code=401, detail="Request does not contain application token")
     
@@ -146,8 +146,8 @@ async def delete_feature_group_data(request: FeatureGroupRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.post("/feature-group-size/")
-async def feature_group_size(request: FeatureGroupSizeRequest):
+@router.post("/size")
+async def get_feature_group_size(request: FeatureGroupSizeRequest):
     try:
         total_size = 0
         client = KerberosClient(config.HDFS_HOST)
