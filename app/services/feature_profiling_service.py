@@ -14,7 +14,7 @@ logger = setup_logger(__name__)
 
 
 class FeatureProfilingService:
-    """Service for feature store dataset processing operations."""
+    """Service for feature group dataset processing operations."""
     
     def __init__(self):
         self.db_service = DataPrepDBService()

@@ -156,7 +156,7 @@ class DataPrepDBService:
             logger.error(f"Error listing datasets: {e}")
             raise
 
-    # Feature Store methods
+    # Feature Group methods
     def get_pending_feature_groups(self) -> List[Tuple[str, bool]]:
         """Get all pending feature groups (status = 1)."""
         try:

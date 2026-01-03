@@ -50,11 +50,11 @@ SHAPE_PREDICTOR_PATH= os.environ.get("SHAPE_PREDICTOR_PATH")
     
 # File settings
 URL: str = os.getenv("URL", "")
-URL2: str = os.getenv("URL2", "")  # Feature store URL
+URL2: str = os.getenv("URL2", "")  # Feature group URL
 URL3: str = os.getenv("URL3", "")  # Training dataset URL
 LOCAL_DIR: str = os.getenv("LOCAL_DIR", "/tmp/dataprep")
 
-# Hive settings (for feature store)
+# Hive settings (for feature group)
 HIVE_HOST: str = os.getenv("HIVE_HOST", "localhost")
 HIVE_PORT: int = int(os.getenv("HIVE_PORT", "10000"))
 HIVE_PRINCIPAL: str = os.getenv("HIVE_PRINCIPAL", "")

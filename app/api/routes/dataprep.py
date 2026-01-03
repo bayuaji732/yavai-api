@@ -3,13 +3,13 @@ from typing import Optional
 
 from models.dataprep import (
     DataPrepRequest, DataPrepResponse, BatchDataPrepRequest,
-    FeatureGroupRequest, FeatureGroupResponse,
-    TrainingDatasetRequest, TrainingDatasetResponse, TrainingDatasetBatchRequest
+    FeatureGroupProfilingRequest, FeatureGroupProfilingResponse,
+    TrainingDatasetProfilingRequest, TrainingDatasetProfilingResponse, TrainingDatasetBatchProfilingRequest
 )
-from services.data_profiling_service import DatasetService
-from services.feature_profiling_service import FeatureStoreService
-from services.training_dataset_profiling_service import TrainingDatasetService
-from services.dataprep_db_service import DatabaseService
+from services.data_profiling_service import DataProfilingService
+from services.feature_profiling_service import FeatureProfilingService
+from services.training_dataset_profiling_service import TrainingDatasetProfilingService
+from services.dataprep_db_service import DataPrepDBService
 from core.utils import setup_logger
 
 router = APIRouter()
@@ -38,7 +38,7 @@ async def run_dataset_profiling(
     try:
         logger.info(f"Received request to process file_id: {request.file_id}")
         
-        dataset_service = DatasetService()
+        dataset_service = DataProfilingService()
         if not dataset_service.is_valid_file_type(request.file_type):
             raise HTTPException(
                 status_code=400,
@@ -76,7 +76,7 @@ async def run_dataset_profiling_batch(
     try:
         logger.info(f"Received batch request for table: {request.table_name}")
         
-        dataset_service = DatasetService()
+        dataset_service = DataProfilingService()
         background_tasks.add_task(
             dataset_service.process_batch_datasets,
             request.table_name,
@@ -107,7 +107,7 @@ async def get_dataset_profiling_status(file_id: str, table_name: str = "dataset"
     - None: Not found or error
     """
     try:
-        db_service = DatabaseService()
+        db_service = DataProfilingService()
         status = db_service.get_dataset_status(table_name, file_id)
         
         if status is None:
@@ -142,7 +142,7 @@ async def get_list_datasets(
     - **offset**: Number of results to skip
     """
     try:
-        db_service = DatabaseService()
+        db_service = DataProfilingService()
         datasets = db_service.list_datasets(table_name, status, limit, offset)
         
         return {
@@ -158,12 +158,12 @@ async def get_list_datasets(
 
 
 # ============================================
-# FEATURE STORE ENDPOINTS
+# FEATURE GROUP ENDPOINTS
 # ============================================
 
-@router.post("/feature-groups/profiling", response_model=FeatureGroupResponse, tags=["Feature Store"])
+@router.post("/feature-groups/profiling", response_model=FeatureGroupProfilingResponse, tags=["Feature Group"])
 async def run_feature_group_profiling(
-    request: FeatureGroupRequest,
+    request: FeatureGroupProfilingRequest,
     background_tasks: BackgroundTasks
 ):
     """
@@ -178,14 +178,14 @@ async def run_feature_group_profiling(
     try:
         logger.info(f"Received request to process feature group: {request.table_name}")
         
-        feature_store_service = FeatureStoreService()
+        feature_group_service = FeatureProfilingService()
         background_tasks.add_task(
-            feature_store_service.process_single_feature_group,
+            feature_group_service.process_single_feature_group,
             request.table_name,
             request.online
         )
         
-        return FeatureGroupResponse(
+        return FeatureGroupProfilingResponse(
             status="accepted",
             message="Feature group processing started",
             table_name=request.table_name
@@ -196,8 +196,8 @@ async def run_feature_group_profiling(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/feature-groups/profiling/batch", response_model=FeatureGroupResponse, tags=["Feature Store"])
-async def run_feature_group_profiling_batch(background_tasks: BackgroundTasks):
+@router.post("/feature-groups/profiling/batch", response_model=FeatureGroupProfilingResponse, tags=["Feature Group"])
+async def run_feature_group_profiling_batch(background_tasks: BackgroundTasks) -> FeatureGroupProfilingResponse:
     """
     Process all pending feature groups.
     
@@ -206,12 +206,12 @@ async def run_feature_group_profiling_batch(background_tasks: BackgroundTasks):
     try:
         logger.info("Received batch request for feature groups")
         
-        feature_store_service = FeatureStoreService()
+        feature_group_service = FeatureProfilingService()
         background_tasks.add_task(
-            feature_store_service.process_batch_feature_groups
+            feature_group_service.process_batch_feature_groups
         )
         
-        return FeatureGroupResponse(
+        return FeatureGroupProfilingResponse(
             status="accepted",
             message="Batch feature group processing started"
         )
@@ -221,7 +221,7 @@ async def run_feature_group_profiling_batch(background_tasks: BackgroundTasks):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("feature-groups/profiling/status/{table_name}", tags=["Feature Store"])
+@router.get("/feature-groups/profiling/status/{table_name}", tags=["Feature Group"])
 async def get_feature_group_profiling_status(table_name: str):
     """
     Get the processing status of a feature group.
@@ -233,7 +233,7 @@ async def get_feature_group_profiling_status(table_name: str):
     - 3: Processing failed
     """
     try:
-        db_service = DatabaseService()
+        db_service = DataPrepDBService()
         status = db_service.get_feature_group_status(table_name)
         
         if status is None:
@@ -252,7 +252,7 @@ async def get_feature_group_profiling_status(table_name: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/feature-groups/profiling/list", tags=["Feature Store"])
+@router.get("/feature-groups/profiling/list", tags=["Feature Group"])
 async def get_list_feature_groups(
     status: Optional[int] = None,
     limit: int = 100,
@@ -266,7 +266,7 @@ async def get_list_feature_groups(
     - **offset**: Number of results to skip
     """
     try:
-        db_service = DatabaseService()
+        db_service = DataPrepDBService()
         feature_groups = db_service.list_feature_groups(status, limit, offset)
         
         return {
@@ -285,9 +285,9 @@ async def get_list_feature_groups(
 # TRAINING DATASET ENDPOINTS
 # ============================================
 
-@router.post("/training-datasets/profiling", response_model=TrainingDatasetResponse, tags=["Training Dataset"])
+@router.post("/training-datasets/profiling", response_model=TrainingDatasetProfilingResponse, tags=["Training Dataset"])
 async def run_training_dataset_profiling(
-    request: TrainingDatasetRequest,
+    request: TrainingDatasetProfilingRequest,
     background_tasks: BackgroundTasks
 ):
     """
@@ -302,7 +302,7 @@ async def run_training_dataset_profiling(
     try:
         logger.info(f"Received request to process training dataset ID: {request.td_id}")
         
-        training_dataset_service = TrainingDatasetService()
+        training_dataset_service = TrainingDatasetProfilingService()
         background_tasks.add_task(
             training_dataset_service.process_single_training_dataset,
             request.td_id,
@@ -310,7 +310,7 @@ async def run_training_dataset_profiling(
             request.dataset_format
         )
         
-        return TrainingDatasetResponse(
+        return TrainingDatasetProfilingResponse(
             status="accepted",
             message="Training dataset processing started",
             td_id=request.td_id
@@ -321,9 +321,9 @@ async def run_training_dataset_profiling(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/training-datasets/profiling/batch", response_model=TrainingDatasetResponse, tags=["Training Dataset"])
+@router.post("/training-datasets/profiling/batch", response_model=TrainingDatasetProfilingResponse, tags=["Training Dataset"])
 async def run_training_datasets_profiling_batch(
-    request: TrainingDatasetBatchRequest,
+    request: TrainingDatasetBatchProfilingRequest,
     background_tasks: BackgroundTasks
 ):
     """
@@ -337,13 +337,13 @@ async def run_training_datasets_profiling_batch(
     try:
         logger.info(f"Received batch request for training datasets (format: {request.dataset_format})")
         
-        training_dataset_service = TrainingDatasetService()
+        training_dataset_service = TrainingDatasetProfilingService()
         background_tasks.add_task(
             training_dataset_service.process_batch_training_datasets,
             request.dataset_format
         )
         
-        return TrainingDatasetResponse(
+        return TrainingDatasetProfilingResponse(
             status="accepted",
             message="Batch training dataset processing started"
         )
@@ -365,7 +365,7 @@ async def get_training_dataset_profiling_status(td_id: str):
     - 3: Processing failed
     """
     try:
-        db_service = DatabaseService()
+        db_service = DataPrepDBService()
         status = db_service.get_training_dataset_status(td_id)
         
         if status is None:
@@ -400,7 +400,7 @@ async def get_list_training_datasets(
     - **offset**: Number of results to skip
     """
     try:
-        db_service = DatabaseService()
+        db_service = DataPrepDBService()
         training_datasets = db_service.list_training_datasets(
             status, dataset_format, limit, offset
         )

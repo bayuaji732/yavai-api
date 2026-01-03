@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from api.routes import feature_groups, training_datasets, privacy, word_count
 from app.api.routes import dataprep, ingestion
 
-app = FastAPI(title="YavAI API", version="2.0.0", description="API for feature store management and data profiling")
+app = FastAPI(title="YavAI API", version="2.0.0", description="API for feature group management and data profiling")
 
 app.add_middleware(
     CORSMiddleware,

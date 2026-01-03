@@ -103,8 +103,8 @@ async def get_notebooks_word_count():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/filemanagement")
-async def get_filemanagement_word_count():
+@router.get("/file-management")
+async def get_file_management_word_count():
     try:
         with get_db_connection() as conn:
             cur = conn.cursor()

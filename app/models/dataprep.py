@@ -45,7 +45,7 @@ class BatchDataPrepRequest(BaseModel):
 
 
 # ============================================
-# FEATURE STORE PROFILING MODELS
+# FEATURE GROUP PROFILING MODELS
 # ============================================
 
 class FeatureGroupProfilingRequest(BaseModel):
