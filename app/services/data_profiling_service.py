@@ -1,3 +1,4 @@
+import logging
 import os
 import pandas as pd
 import requests
@@ -8,10 +9,10 @@ from urllib3.exceptions import InsecureRequestWarning
 
 from services.dataprep_db_service import DataPrepDBService
 from core import config
-from core.utils import setup_logger, ensure_local_dir, cleanup_file
+from core.utils import ensure_local_dir, cleanup_file
 
 warnings.filterwarnings("ignore", category=InsecureRequestWarning)
-logger = setup_logger(__name__)
+logger = logging.getLogger(__name__)
 
 class DataProfilingService:
     """Service for dataset processing operations."""

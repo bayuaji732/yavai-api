@@ -1,3 +1,4 @@
+import logging
 import os
 import pandas as pd
 import json
@@ -5,12 +6,12 @@ import requests
 from ydata_profiling import ProfileReport
 
 from services.dataprep_db_service import DataPrepDBService
-from core.utils import setup_logger, cleanup_file
+from core.utils import cleanup_file
 from core import config
 from db.hive import get_hive_connection
 from db.redis import get_redis_client
 
-logger = setup_logger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class FeatureProfilingService:

@@ -65,11 +65,5 @@ HADOOP_HOME: str = os.getenv("HADOOP_HOME", "/usr/hadoop")
 HDFS_NAMENODE: str = os.getenv("HDFS_NAMENODE", "localhost")
 TICKET_CACHE_PATH: str = os.getenv("TICKET_CACHE_PATH", "/tmp/krb5cc_1062")
     
-# Logging settings
-LOG_FILE_PATH: str = os.getenv("LOG_FILE_PATH", "logs/dataset.log")
-MAX_LOG_SIZE: int = 10 * 1024 * 1024  # 10 MB
-BACKUP_COUNT: int = 5
-    
 # API settings
-MAX_FILE_SIZE: int = 100 * 1024 * 1024  # 100 MB
 ALLOWED_FILE_TYPES: list = ['csv', 'tsv', 'xls', 'xlsx', 'sav']

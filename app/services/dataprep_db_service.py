@@ -1,10 +1,10 @@
+import logging
 from psycopg2.extras import RealDictCursor
 from typing import Optional, List, Dict, Any, Tuple
 
 from db.postgres import get_db_connection
-from core.utils import setup_logger
 
-logger = setup_logger(__name__)
+logger = logging.getLogger(__name__)
 
 class DataPrepDBService:
     """Service for database operations."""

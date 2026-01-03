@@ -1,3 +1,4 @@
+import logging
 from fastapi import APIRouter, HTTPException, BackgroundTasks
 from typing import Optional
 
@@ -10,10 +11,9 @@ from services.data_profiling_service import DataProfilingService
 from services.feature_profiling_service import FeatureProfilingService
 from services.training_dataset_profiling_service import TrainingDatasetProfilingService
 from services.dataprep_db_service import DataPrepDBService
-from core.utils import setup_logger
 
 router = APIRouter()
-logger = setup_logger(__name__)
+logger = logging.getLogger(__name__)
 
 
 # ============================================

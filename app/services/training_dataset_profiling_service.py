@@ -1,3 +1,4 @@
+import logging
 import os
 import pandas as pd
 import pandas_tfrecords as pdtf
@@ -9,9 +10,9 @@ from typing import Optional
 
 from services.dataprep_db_service import DataPrepDBService
 from core import config
-from core.utils import setup_logger, cleanup_file
+from core.utils import cleanup_file
 
-logger = setup_logger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class TrainingDatasetProfilingService:
