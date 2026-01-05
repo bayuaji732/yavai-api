@@ -1,5 +1,5 @@
 from typing import Optional, List
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 class TrainingDataset(BaseModel):
     training_dataset_id: Optional[str] = None
@@ -12,5 +12,4 @@ class TrainingDataset(BaseModel):
     status: Optional[str] = None
     feature_group_ids: Optional[List[str]] = []
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

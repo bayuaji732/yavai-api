@@ -1,5 +1,5 @@
 from typing import Optional, List
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from app.models.feature import Feature
 
 class FeatureGroup(BaseModel):
@@ -17,5 +17,4 @@ class FeatureGroup(BaseModel):
     data_type: Optional[str] = None
     feature_group_online: bool = False
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes = True)

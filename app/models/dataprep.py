@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional
 
 
@@ -12,7 +12,7 @@ class DataPrepRequest(BaseModel):
     file_id: str = Field(..., description="File ID to process")
     file_type: str = Field(..., description="File type (csv, tsv, xls, xlsx, sav)")
     
-    class Config:
+    model_config = ConfigDict(
         json_schema_extra = {
             "example": {
                 "table_name": "dataset",
@@ -20,6 +20,7 @@ class DataPrepRequest(BaseModel):
                 "file_type": "csv"
             }
         }
+    )
 
 
 class DataPrepResponse(BaseModel):
@@ -35,13 +36,14 @@ class BatchDataPrepRequest(BaseModel):
     table_name: str = Field(..., description="Name of the table to process")
     filters: Optional[dict] = Field(None, description="Optional filters for batch processing")
     
-    class Config:
+    model_config = ConfigDict(
         json_schema_extra = {
             "example": {
                 "table_name": "dataset",
                 "filters": {"status": 1}
             }
         }
+    )
 
 
 # ============================================
@@ -53,13 +55,14 @@ class FeatureGroupProfilingRequest(BaseModel):
     table_name: str = Field(..., description="Name of the feature group table")
     online: bool = Field(..., description="Whether the data is stored in Redis (True) or Hive (False)")
     
-    class Config:
+    model_config = ConfigDict(
         json_schema_extra = {
             "example": {
                 "table_name": "customer_features",
                 "online": False
             }
         }
+    )
 
 
 class FeatureGroupProfilingResponse(BaseModel):
@@ -79,7 +82,7 @@ class TrainingDatasetProfilingRequest(BaseModel):
     hdfs_path: str = Field(..., description="HDFS path to the dataset")
     dataset_format: str = Field(..., description="Dataset format (csv, tfrecord)")
     
-    class Config:
+    model_config = ConfigDict(
         json_schema_extra = {
             "example": {
                 "td_id": "12345",
@@ -87,18 +90,20 @@ class TrainingDatasetProfilingRequest(BaseModel):
                 "dataset_format": "csv"
             }
         }
+    )
 
 
 class TrainingDatasetBatchProfilingRequest(BaseModel):
     """Request model for batch profiling training datasets."""
     dataset_format: Optional[str] = Field(None, description="Filter by dataset format (csv, tfrecord)")
     
-    class Config:
+    model_config = ConfigDict(
         json_schema_extra = {
             "example": {
                 "dataset_format": "csv"
             }
         }
+    )
 
 
 class TrainingDatasetProfilingResponse(BaseModel):
@@ -118,7 +123,7 @@ class StatusResponse(BaseModel):
     status: int
     message: str
     
-    class Config:
+    model_config = ConfigDict(
         json_schema_extra = {
             "example": {
                 "id": "12345",
@@ -126,6 +131,7 @@ class StatusResponse(BaseModel):
                 "message": "Successfully processed"
             }
         }
+    )
 
 
 class ListResponse(BaseModel):

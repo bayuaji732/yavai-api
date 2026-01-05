@@ -23,11 +23,20 @@ class PrivacyService:
     
     def _load_spacy_model(self):
         """Load spaCy model for PII detection"""
+        SPACY_MODEL = "en_core_web_sm"
         try:
-            return spacy.load("en_core_web_sm")
+            return spacy.load(SPACY_MODEL)
         except OSError:
-            print("Warning: spaCy model not found. PII detection will be disabled")
-            return None
+            print(f"Attempting to download spaCy model '{SPACY_MODEL}'...")
+            try:
+                spacy.cli.download(SPACY_MODEL)
+                return spacy.load(SPACY_MODEL)
+            except Exception as e:
+                print(
+                f"Warning: Failed to load spaCy model '{SPACY_MODEL}'. "
+                f"PII detection will be disabled. Error: {e}"
+                )
+                return None
     
     def process_file(self, file_item_id: str, file_type: str, token: str) -> Tuple[str, str, str, List]:
         """Process file for privacy detection"""
