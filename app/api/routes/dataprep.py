@@ -2,15 +2,15 @@ import logging
 from fastapi import APIRouter, HTTPException, BackgroundTasks
 from typing import Optional
 
-from models.dataprep import (
+from app.models.dataprep import (
     DataPrepRequest, DataPrepResponse, BatchDataPrepRequest,
     FeatureGroupProfilingRequest, FeatureGroupProfilingResponse,
     TrainingDatasetProfilingRequest, TrainingDatasetProfilingResponse, TrainingDatasetBatchProfilingRequest
 )
-from services.data_profiling_service import DataProfilingService
-from services.feature_profiling_service import FeatureProfilingService
-from services.training_dataset_profiling_service import TrainingDatasetProfilingService
-from services.dataprep_db_service import DataPrepDBService
+from app.services.data_profiling_service import DataProfilingService
+from app.services.feature_profiling_service import FeatureProfilingService
+from app.services.training_dataset_profiling_service import TrainingDatasetProfilingService
+from app.services.dataprep_db_service import DataPrepDBService
 
 router = APIRouter()
 logger = logging.getLogger(__name__)

@@ -5,11 +5,11 @@ import json
 import requests
 from ydata_profiling import ProfileReport
 
-from services.dataprep_db_service import DataPrepDBService
-from core.utils import cleanup_file
-from core import config
-from db.hive import get_hive_connection
-from db.redis import get_redis_client
+from app.services.dataprep_db_service import DataPrepDBService
+from app.core.utils import cleanup_file
+from app.core import config
+from app.db.hive import get_hive_connection
+from app.db.redis import get_redis_client
 
 logger = logging.getLogger(__name__)
 

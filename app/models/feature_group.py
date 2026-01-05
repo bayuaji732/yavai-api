@@ -1,6 +1,6 @@
 from typing import Optional, List
 from pydantic import BaseModel
-from models.feature import Feature
+from app.models.feature import Feature
 
 class FeatureGroup(BaseModel):
     feature_group_id: Optional[str] = None

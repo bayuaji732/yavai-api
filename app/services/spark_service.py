@@ -3,7 +3,7 @@ import regex
 import pandas as pd
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import current_timestamp, date_format
-from core import config
+from app.core import config
 class SparkService:
     
     def pandas_to_spark(self, spark_session: SparkSession, df: pd.DataFrame) -> DataFrame:

@@ -1,5 +1,5 @@
 from fastapi import Depends
-from core.security import verify_token
+from app.core.security import verify_token
 from app.core.spark_config import create_spark_session
 from pyspark.sql import SparkSession
 

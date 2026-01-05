@@ -1,7 +1,7 @@
 import os
 import logging
 from logging.handlers import RotatingFileHandler
-from core import config
+from app.core import config
 
 def ensure_local_dir():
     """Ensure the local directory exists."""

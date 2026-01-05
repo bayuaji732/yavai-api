@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Response
-from models.requests import TrainingDatasetRequest
-from services.training_dataset_service import TrainingDatasetService
-from services.spark_service import parse_training_dataset_json
+from app.models.requests import TrainingDatasetRequest
+from app.services.training_dataset_service import TrainingDatasetService
+from app.services.spark_service import parse_training_dataset_json
 from app.core.spark_config import create_spark_session
 
 router = APIRouter()

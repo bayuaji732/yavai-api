@@ -10,7 +10,7 @@ class TrainingDatasetService:
         training_dataset_dto_object: Any
     ) -> dict:
         """Save training dataset data"""
-        from services.spark_service import SparkService
+        from app.services.spark_service import SparkService
         spark_service = SparkService()
         
         # Get feature groups and build query
@@ -28,7 +28,7 @@ class TrainingDatasetService:
     
     def preview_training_dataset_data(self, spark_session: SparkSession, training_dataset_object: Any):
         """Preview training dataset"""
-        from services.spark_service import SparkService
+        from app.services.spark_service import SparkService
         spark_service = SparkService()
         
         dataframe = spark_service.read_training_dataset(spark_session, training_dataset_object)
@@ -46,7 +46,7 @@ class TrainingDatasetService:
     def _get_feature_group(self, feature_group_id: str):
         """Get feature group from API"""
         import requests
-        from core import config
+        from app.core import config
         
         url = f"{config.YAVAI_API_BASE_URL}/dataset-management/api/v1/lib/feature-groups/{feature_group_id}"
         response = requests.get(url, headers={"Content-Type": "application/json"}, verify=False)
@@ -68,7 +68,7 @@ class TrainingDatasetService:
     
     def _create_path(self, training_dataset_object) -> str:
         """Create HDFS path for training dataset"""
-        from core import config
+        from app.core import config
         import os
         
         path = os.path.join(config.HDFS_NAME_NODE, "user", "apps", "hive")

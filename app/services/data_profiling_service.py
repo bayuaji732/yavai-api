@@ -7,9 +7,9 @@ from typing import Optional, Dict, Any
 import warnings
 from urllib3.exceptions import InsecureRequestWarning
 
-from services.dataprep_db_service import DataPrepDBService
-from core import config
-from core.utils import ensure_local_dir, cleanup_file
+from app.services.dataprep_db_service import DataPrepDBService
+from app.core import config
+from app.core.utils import ensure_local_dir, cleanup_file
 
 warnings.filterwarnings("ignore", category=InsecureRequestWarning)
 logger = logging.getLogger(__name__)

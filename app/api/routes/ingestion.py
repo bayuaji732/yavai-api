@@ -5,8 +5,8 @@ import pandas as pd
 from datetime import datetime
 from fastapi import APIRouter, HTTPException, UploadFile, File, Form
 from app.core.spark_config import create_spark_session
-from services.spark_service import SparkService
-from core import config
+from app.services.spark_service import SparkService
+from app.core import config
 
 router = APIRouter()
 spark_service = SparkService()

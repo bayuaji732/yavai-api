@@ -2,7 +2,7 @@ import os
 import findspark
 from pyspark import SparkConf
 from pyspark.sql import SparkSession
-from core import config
+from app.core import config
 
 findspark.init(config.SPARK_HOME)
 

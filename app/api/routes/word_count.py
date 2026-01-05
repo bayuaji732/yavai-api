@@ -1,9 +1,14 @@
 import pandas as pd
 from fastapi import APIRouter, HTTPException
+import nltk
 from nltk.corpus import stopwords
-from db.postgres import get_db_connection
+from app.db.postgres import get_db_connection
+from app.core import config
 
 router = APIRouter()
+
+if config.NLTK_DATA_DIR not in nltk.data.path:
+    nltk.data.path.append(config.NLTK_DATA_DIR)
 
 stop_words_english = set(stopwords.words('english'))
 stop_words_indonesian = set(stopwords.words('indonesian'))

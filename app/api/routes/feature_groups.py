@@ -2,13 +2,13 @@ import os
 import csv
 from fastapi import APIRouter, HTTPException, Response
 from fastapi.responses import FileResponse
-from models.requests import FeatureGroupRequest, DownloadRequest, AddColumnRequest, FeatureGroupSizeRequest
-from services.feature_group_service import FeatureGroupService
-from services.spark_service import parse_feature_group_json
+from app.models.requests import FeatureGroupRequest, DownloadRequest, AddColumnRequest, FeatureGroupSizeRequest
+from app.services.feature_group_service import FeatureGroupService
+from app.services.spark_service import parse_feature_group_json
 from app.core.spark_config import create_spark_session
-from db.redis import get_redis_client
+from app.db.redis import get_redis_client
 from hdfs.ext.kerberos import KerberosClient
-from core import config
+from app.core import config
 
 router = APIRouter()
 service = FeatureGroupService()

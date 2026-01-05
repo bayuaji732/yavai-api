@@ -1,5 +1,5 @@
 import redis
-from core import config
+from app.core import config
 
 def get_redis_client():
     return redis.StrictRedis(

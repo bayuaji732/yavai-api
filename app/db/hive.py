@@ -1,6 +1,6 @@
 from contextlib import contextmanager
 from pyhive import hive
-from core import config
+from app.core import config
 
 @contextmanager
 def get_hive_connection():

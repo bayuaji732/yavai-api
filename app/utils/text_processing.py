@@ -4,14 +4,18 @@ import nltk
 from nltk import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
+from app.core import config
+
+if config.NLTK_DATA_DIR not in nltk.data.path:
+    nltk.data.path.append(config.NLTK_DATA_DIR)
 
 # Ensure NLTK data is available
 try:
     nltk.data.find('corpora/stopwords')
 except LookupError:
-    nltk.download('stopwords')
-    nltk.download('wordnet')
-    nltk.download('punkt')
+    nltk.download('stopwords', download_dir=config.NLTK_DATA_DIR)
+    nltk.download('wordnet', download_dir=config.NLTK_DATA_DIR)
+    nltk.download('punkt', download_dir=config.NLTK_DATA_DIR)
 
 class TextProcessor:
     

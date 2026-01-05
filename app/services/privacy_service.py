@@ -9,7 +9,7 @@ from pillow_heif import register_heif_opener
 import cv2
 import dlib
 import spacy
-from core import config
+from app.core import config
 
 IMAGE_TYPES = {'jpg', 'jpeg', 'png', 'bmp', 'tiff', 'tif', 'heic', 'heif', 'webp'}
 DATA_TYPES = {'csv', 'tsv', 'txt', 'xls', 'xlsx', 'sav'}

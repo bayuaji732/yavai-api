@@ -2,7 +2,7 @@ import regex
 import jwt
 import base64
 from typing import Tuple
-from core import config
+from app.core import config
 
 def clean_table_name(table_name: str) -> str:
     """Clean and normalize table name"""

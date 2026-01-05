@@ -67,3 +67,6 @@ TICKET_CACHE_PATH: str = os.getenv("TICKET_CACHE_PATH", "/tmp/krb5cc_1062")
     
 # API settings
 ALLOWED_FILE_TYPES: list = ['csv', 'tsv', 'xls', 'xlsx', 'sav']
+
+BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+NLTK_DATA_DIR = os.path.join(BASE_DIR, "ml_models", "nltk_data")

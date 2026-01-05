@@ -1,7 +1,7 @@
 import jwt
 import base64
 from fastapi import HTTPException, Header
-from core import config
+from app.core import config
 
 def verify_token(token: str = Header(..., alias="Authorization")) -> dict:
     if not token:

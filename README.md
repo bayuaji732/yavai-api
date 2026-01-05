@@ -1,49 +1,6 @@
 # YavAI API - FastAPI
 
-🛠️ Core Capabilities
-
-1. Feature Group Management
-   The API serves as a centralized interface for managing Feature Groups, allowing teams to curate and reuse high-quality features across different models.
-
-Lifecycle Operations: Create new groups, delete obsolete ones, and dynamically add columns to existing schemas.
-
-Data Inspection: Preview sample records, download datasets for local analysis, and monitor storage footprint with real-time size retrieval.
-
-2. Training Dataset Orchestration
-   Streamline the creation of model-specific snapshots derived from your feature store.
-
-Snapshotting: Create and manage immutable training datasets.
-
-Validation: Preview data before initiating long-running training jobs to ensure integrity.
-
-3. Data Profiling & Preparation
-   Automate the "understanding" phase of data science. The API generates comprehensive reports to identify distributions, outliers, and missing values.
-
-Unified Profiling: Generate insights for raw datasets, feature groups, and finalized training sets.
-
-Automated Preparation: Trigger workflows to clean or transform data into a ML-ready format.
-
-📊 Analytics & Privacy
-Advanced Analytics
-Get a bird's-eye view of your entire workspace through cross-platform metadata analysis:
-
-Word Count Analytics: Perform linguistic analysis across datasets, feature groups, and even code assets like Jupyter Notebooks.
-
-Resource Tracking: Aggregate metrics from File Management and the Model Zoo to monitor asset proliferation.
-
-Automated Privacy & PII Protection
-Ensure compliance (like GDPR or CCPA) with built-in security features:
-
-Text Redaction: Automatically detect and flag Private Personal Information (PII) within text fields.
-
-Vision Privacy: Detect faces in image datasets and apply automated blurring to protect identities.
-
-📂 Data Engineering & Integration
-The API simplifies complex ETL (Extract, Transform, Load) tasks to move data between legacy formats and modern data lakes.
-
-Hive Integration: Seamlessly insert or append CSV data directly into existing Apache Hive tables.
-
-Format Conversion: Bridge the gap between statistical software and big data by converting .sav (SPSS) files into standard CSV format.
+Modern FastAPI implementation of the YavAI API with comprehensive data processing and profiling capabilities.
 
 ## Project Structure
 

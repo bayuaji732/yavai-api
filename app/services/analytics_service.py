@@ -1,9 +1,14 @@
 import pandas as pd
 from typing import List
+import nltk
 from nltk.corpus import stopwords
+from app.core import config
 
 class AnalyticsService:
     
+    if config.NLTK_DATA_DIR not in nltk.data.path:
+        nltk.data.path.append(config.NLTK_DATA_DIR)
+
     def __init__(self):
         self.stop_words_english = set(stopwords.words('english'))
         self.stop_words_indonesian = set(stopwords.words('indonesian'))

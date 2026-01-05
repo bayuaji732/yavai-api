@@ -8,9 +8,9 @@ from pyarrow.fs import FileSelector
 from ydata_profiling import ProfileReport
 from typing import Optional
 
-from services.dataprep_db_service import DataPrepDBService
-from core import config
-from core.utils import cleanup_file
+from app.services.dataprep_db_service import DataPrepDBService
+from app.core import config
+from app.core.utils import cleanup_file
 
 logger = logging.getLogger(__name__)
 

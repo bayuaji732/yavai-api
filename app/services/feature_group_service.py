@@ -7,7 +7,7 @@ class FeatureGroupService:
     
     def save_feature_group_data(self, spark_session: SparkSession, feature_group_object: Any) -> dict:
         """Save feature group data from API call"""
-        from services.spark_service import SparkService
+        from app.services.spark_service import SparkService
         spark_service = SparkService()
         
         # Get file path
@@ -89,7 +89,7 @@ class FeatureGroupService:
     def _get_file_path(self, file_item_id: str) -> str:
         """Get file path from API"""
         import requests
-        from core import config
+        from app.core import config
         
         url = f"{config.YAVAI_API_BASE_URL}/dataset-management/api/v1/lib/files/{file_item_id}/s3a-path"
         response = requests.get(url, headers={"Content-Type": "application/json"}, verify=False)

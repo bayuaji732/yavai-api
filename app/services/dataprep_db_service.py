@@ -2,7 +2,7 @@ import logging
 from psycopg2.extras import RealDictCursor
 from typing import Optional, List, Dict, Any, Tuple
 
-from db.postgres import get_db_connection
+from app.db.postgres import get_db_connection
 
 logger = logging.getLogger(__name__)
 

@@ -2,8 +2,8 @@ import os
 import json
 import requests
 from fastapi import APIRouter, HTTPException, Form
-from db.postgres import get_db_connection
-from services.privacy_service import PrivacyService
+from app.db.postgres import get_db_connection
+from app.services.privacy_service import PrivacyService
 
 router = APIRouter()
 service = PrivacyService()
