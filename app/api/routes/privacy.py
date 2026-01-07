@@ -1,17 +1,18 @@
 import os
 import json
 import requests
-from fastapi import APIRouter, HTTPException, Form
+from fastapi import APIRouter, HTTPException
 from app.db.postgres import get_db_connection
+from app.models.requests import PrivacyDetectionRequest
 from app.services.privacy_service import PrivacyService
 
 router = APIRouter()
 service = PrivacyService()
 
-@router.post("/{file_item_id}")
-async def privacy_detection(file_item_id: str, token: str = Form(...)):
-    if not token:
-        raise HTTPException(status_code=401, detail="Authentication token is required in form data")
+@router.post("/")
+async def privacy_detection(request: PrivacyDetectionRequest):
+    if not request.token:
+        raise HTTPException(status_code=401, detail="Authentication token is required")
     
     temp_file_path = None
     
@@ -22,7 +23,7 @@ async def privacy_detection(file_item_id: str, token: str = Form(...)):
                 SELECT privacy_detection_result, privacy_detection_type
                 FROM file_item
                 WHERE id = %s
-            ''', (file_item_id,))
+            ''', (request.file_item_id,))
             result = cur.fetchone()
             
             cached_result = result[0] if result else None
@@ -61,7 +62,7 @@ async def privacy_detection(file_item_id: str, token: str = Form(...)):
                 }
             
             # No cache - process file
-            cur.execute('SELECT file_type FROM file_item WHERE id = %s', (file_item_id,))
+            cur.execute('SELECT file_type FROM file_item WHERE id = %s', (request.file_item_id,))
             file_type_result = cur.fetchone()
             
             if not file_type_result:
@@ -70,9 +71,9 @@ async def privacy_detection(file_item_id: str, token: str = Form(...)):
             file_type = file_type_result[0].lower() if file_type_result[0] else 'unknown'
             
             processing_category, detection_type, status_message, data = service.process_file(
-                file_item_id=file_item_id,
+                file_item_id=request.file_item_id,
                 file_type=file_type,
-                token=token
+                token=request.token
             )
             
             # Cache result
@@ -84,7 +85,7 @@ async def privacy_detection(file_item_id: str, token: str = Form(...)):
                 ON CONFLICT (id) DO UPDATE SET
                     privacy_detection_result = EXCLUDED.privacy_detection_result,
                     privacy_detection_type = EXCLUDED.privacy_detection_type
-            ''', (file_item_id, db_result_value, detection_type))
+            ''', (request.file_item_id, db_result_value, detection_type))
             
             return {
                 "statusCode": 200,

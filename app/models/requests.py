@@ -24,3 +24,7 @@ class AddColumnRequest(BaseModel):
 
 class FeatureGroupSizeRequest(BaseModel):
     data: List[dict]
+
+class PrivacyDetectionRequest(BaseModel):
+    file_item_id: str
+    token: str

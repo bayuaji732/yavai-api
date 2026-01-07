@@ -19,7 +19,10 @@ fastapi_app/
 ├── services/               # Business logic
 │   ├── feature_group_service.py
 │   ├── training_dataset_service.py
+│   ├── analytics_service.py
 │   ├── privacy_service.py
+│   ├── spark_service.py
+│   ├── dataprep_db_service.py
 │   ├── data_profiling_service.py
 │   ├── feature_profiling_service.py
 │   └── training_dataset_profiling_service.py
@@ -199,7 +202,7 @@ Once running, access the interactive API documentation:
 
 ### Privacy Detection
 
-- `POST /api/v1/privacy-detection/{file_item_id}` - Detect PII/faces in files
+- `POST /api/v1/privacy-detection/` - Detect PII/faces in files
 
 ### CSV Import
 
