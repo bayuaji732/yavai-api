@@ -39,6 +39,17 @@ async def run_dataset_profiling(
         logger.info(f"Received request to process file_id: {request.file_id}")
         
         dataset_service = DataProfilingService()
+
+        # Check if already processed
+        db_service = DataPrepDBService()
+        current_status = db_service.get_dataset_status(request.table_name, request.file_id)
+        if current_status == 0:
+            return DataPrepResponse(
+                status="already_processed",
+                message="Dataset already processed",
+                file_id=request.file_id
+            )
+            
         if not dataset_service.is_valid_file_type(request.file_type):
             raise HTTPException(
                 status_code=400,
@@ -177,6 +188,16 @@ async def run_feature_group_profiling(
     """
     try:
         logger.info(f"Received request to process feature group: {request.table_name}")
+
+        # Check if already processed
+        db_service = DataPrepDBService()
+        current_status = db_service.get_feature_group_status(request.table_name)
+        if current_status == 0:
+            return FeatureGroupProfilingResponse(
+                status="already_processed",
+                message="Feature group already processed",
+                table_name=request.table_name
+            )
         
         feature_group_service = FeatureProfilingService()
         background_tasks.add_task(
@@ -301,6 +322,16 @@ async def run_training_dataset_profiling(
     """
     try:
         logger.info(f"Received request to process training dataset ID: {request.td_id}")
+
+        # Check if already processed
+        db_service = DataPrepDBService()
+        current_status = db_service.get_training_dataset_status(request.td_id)
+        if current_status == 0:
+            return TrainingDatasetProfilingResponse(
+                status="already_processed",
+                message="Training dataset already processed",
+                td_id=request.td_id
+            )
         
         training_dataset_service = TrainingDatasetProfilingService()
         background_tasks.add_task(

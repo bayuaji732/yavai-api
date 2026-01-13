@@ -143,6 +143,12 @@ class TrainingDatasetProfilingService:
         """Process a single training dataset."""
         try:
             logger.info(f"Starting processing for training dataset ID: {td_id}")
+
+            # Check if already processed
+            current_status = self.db_service.get_training_dataset_status(td_id)
+            if current_status == 0:
+                logger.info(f"Training dataset {td_id} already processed. Skipping.")
+                return
             
             # Update status to processing (2)
             self.db_service.update_training_dataset_status(td_id, 2)

@@ -121,6 +121,12 @@ class FeatureProfilingService:
         """Process a single feature group."""
         try:
             logger.info(f"Starting processing for feature group: {table}")
+
+            # Check if already processed
+            current_status = self.db_service.get_feature_group_status(table)
+            if current_status == 0:
+                logger.info(f"Feature group {table} already processed. Skipping.")
+                return
             
             # Update status to processing (2)
             self.db_service.update_feature_group_status(table, 2)

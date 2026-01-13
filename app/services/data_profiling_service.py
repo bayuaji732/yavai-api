@@ -35,11 +35,20 @@ class DataProfilingService:
         """Process a single dataset file."""
         try:
             logger.info(f"Starting processing for file_id: {file_id}, type: {file_type}")
+
+            # Check if already processed
+            current_status = self.db_service.get_dataset_status(table_name, file_id)
+            if current_status == 0:
+                logger.info(f"File {file_id} already processed. Skipping.")
+                return
+            
+            # Update status to processing (2)
+            self.db_service.update_preprocessing_status(table_name, file_id, 2)
             
             # Download file
             if not self.download_file(file_id, file_type):
                 logger.error(f"Failed to download file_id: {file_id}")
-                self.db_service.update_preprocessing_status(table_name, file_id, None)
+                self.db_service.update_preprocessing_status(table_name, file_id, 3)
                 return
             
             # Generate report

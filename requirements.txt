@@ -44,6 +44,7 @@ regex==2023.12.25
 hdfs[kerberos]==2.7.3
 
 ydata-profiling==4.18.0  # Core profiling library
-# pandas-tfrecords==0.1.6  # TFRecord support
+tensorflow==2.15.0
+pandas-tfrecords==0.1.6  # TFRecord support
 pyhive[hive-pure-sasl]==0.7.0  # Hive connectivity
 python-dotenv==1.2.1

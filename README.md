@@ -46,7 +46,7 @@ fastapi_app/
 
 ### Prerequisites
 
-- Python 3.11+
+- Python 3.10 (tested)
 - Docker and Docker Compose
 - Apache Spark (configured via environment)
 - Hadoop/HDFS (for big data operations)
