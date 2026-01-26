@@ -19,10 +19,10 @@ REDIS_DB = os.environ.get("REDIS_DB")
     
 # Spark
 SPARK_HOME = os.environ.get("SPARK_HOME")
-SPARK_JARS = os.environ.get("SPARK_JARS")
 SPARK_JARS_AWS = os.environ.get("SPARK_JARS_AWS")
 SPARK_JARS_TFRECORD = os.environ.get("SPARK_JARS_TFRECORD")
 SPARK_JARS_EXCEL = os.environ.get("SPARK_JARS_EXCEL")
+SPARK_COMMONS_MATH = os.environ.get("SPARK_COMMONS_MATH")
 SPARK_HADOOP_HIVE_METASTORE_URIS = os.environ.get("SPARK_HADOOP_HIVE_METASTORE_URIS")
 SPARK_KERBEROS_KEYTAB = os.environ.get("SPARK_KERBEROS_KEYTAB")
 SPARK_KERBEROS_PRINCIPAL = os.environ.get("SPARK_KERBEROS_PRINCIPAL")
@@ -47,6 +47,11 @@ JWT_TOKEN_KEY = os.environ.get("JWT_TOKEN_KEY")
 
 # DLIB Model
 SHAPE_PREDICTOR_PATH= os.environ.get("SHAPE_PREDICTOR_PATH")
+
+import os
+BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+ML_MODELS_DIR = os.path.join(BASE_DIR, "ml_models")
+SHAPE_PREDICTOR_FULL_PATH = os.path.join(ML_MODELS_DIR, SHAPE_PREDICTOR_PATH or "shape_predictor_68_face_landmarks.dat")
     
 # File settings
 URL: str = os.getenv("URL", "")

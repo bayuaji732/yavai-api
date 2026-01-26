@@ -11,7 +11,6 @@ class FeatureGroup(BaseModel):
     features: Optional[List[Feature]] = []
     partition_keys: Optional[List[str]] = None
     table_name: Optional[str] = None
-    database_name: Optional[str] = None
     status: str = "EMPTY"
     permission: Optional[int] = 1
     data_type: Optional[str] = None

@@ -15,13 +15,13 @@ def create_spark_session(app_name: str, hadoop_username: str = "apps") -> SparkS
                 config.SPARK_JARS_AWS,
                 config.SPARK_JARS_TFRECORD,
                 config.SPARK_JARS_EXCEL,
+                config.SPARK_COMMONS_MATH,
             ]
         )
     
     conf = (
         SparkConf()
         .setAppName(app_name)
-        .set("spark.jars", config.SPARK_JARS)
         .set("spark.jars.packages", spark_packages)
         .set("spark.dynamicAllocation.enabled", "true")
         .set("spark.shuffle.service.enabled", "true")

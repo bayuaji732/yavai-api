@@ -18,10 +18,10 @@ class FeatureGroupService:
         # Read file based on data type
         if feature_group_object.data_type in ["xls", "xlsx"]:
             spark_dataframe = spark_service.read_excel(spark_session, file_path)
-        elif feature_group_object.data_type == "csv":
+        elif feature_group_object.data_type in ["csv", "tsv"]:
             spark_dataframe = spark_service.read_csv(spark_session, file_path)
         else:
-            raise ValueError("Data types not supported. Use xls/xlsx or csv format")
+            raise ValueError("Data types not supported. Use xls/xlsx or csv/tsv format")
         
         # Clean column names
         for column_name in spark_dataframe.columns:
@@ -59,9 +59,6 @@ class FeatureGroupService:
     
     def download_feature_group_data(self, spark_session: SparkSession, feature_group_object: Any, destination_path: str) -> str:
         """Download feature group data as CSV"""
-        if feature_group_object.database_name:
-            spark_session.sql(f"USE {feature_group_object.database_name}")
-        
         query = f"SELECT * FROM {feature_group_object.table_name}"
         spark_df = spark_session.sql(query)
         pandas_df = spark_df.toPandas()
@@ -82,8 +79,6 @@ class FeatureGroupService:
     
     def delete_feature_group_data(self, spark_session: SparkSession, feature_group_object: Any):
         """Delete feature group data"""
-        if feature_group_object.database_name:
-            spark_session.sql(f"USE {feature_group_object.database_name}")
         spark_session.sql(f"DROP TABLE IF EXISTS {feature_group_object.table_name}")
     
     def _get_file_path(self, file_item_id: str) -> str:

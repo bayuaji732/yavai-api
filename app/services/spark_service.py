@@ -15,7 +15,8 @@ class SparkService:
         header_list = spark_session.sparkContext.textFile(path).take(1)
         header_string = ''.join(header_list)
         
-        result = re.search("([,;|])", header_string)
+        # Check for tab, comma, semicolon, or pipe delimiters
+        result = re.search("([\t,;|])", header_string)
         delimiter = result.group() if result else ","
         
         return spark_session.read.options(
@@ -37,8 +38,6 @@ class SparkService:
     
     def save_to_hive(self, spark_session: SparkSession, dataframe: DataFrame, feature_group_object):
         """Save dataframe to Hive table"""
-        if feature_group_object.database_name:
-            spark_session.sql(f"USE {feature_group_object.database_name}")
         
         hdfs_path = f"{config.HDFS_NAME_NODE}/warehouse/tablespace/managed/hive/{feature_group_object.table_name}"
         
@@ -67,18 +66,88 @@ class SparkService:
         else:
             return self.read_csv(spark_session, training_dataset_object.path)
 
+def camel_to_snake(name: str) -> str:
+    """Convert camelCase string to snake_case"""
+    # Insert an underscore before any uppercase letter and convert to lowercase
+    result = re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', name)
+    return result.lower()
+
+class FeatureObject:
+    """Simple object wrapper for feature dictionaries"""
+    def __init__(self, data):
+        if isinstance(data, dict):
+            for key, value in data.items():
+                if isinstance(value, dict):
+                    setattr(self, key, FeatureObject(value))
+                elif isinstance(value, list):
+                    setattr(self, key, [FeatureObject(item) if isinstance(item, dict) else item for item in value])
+                else:
+                    setattr(self, key, value)
+        else:
+            # If data is not a dict, just store it as is
+            self.__dict__ = data
+    
+    def __getitem__(self, key):
+        """Allow dict-like access"""
+        return getattr(self, key)
+    
+    def __setitem__(self, key, value):
+        """Allow dict-like assignment"""
+        setattr(self, key, value)
+    
+    def to_dict(self):
+        """Convert back to dictionary"""
+        result = {}
+        for key, value in self.__dict__.items():
+            if isinstance(value, FeatureObject):
+                result[key] = value.to_dict()
+            elif isinstance(value, list):
+                result[key] = [item.to_dict() if isinstance(item, FeatureObject) else item for item in value]
+            else:
+                result[key] = value
+        return result
+
+def convert_keys_to_snake_case(data):
+    """Recursively convert all dictionary keys from camelCase to snake_case"""
+    if isinstance(data, dict):
+        return {camel_to_snake(key): convert_keys_to_snake_case(value) for key, value in data.items()}
+    elif isinstance(data, list):
+        return [convert_keys_to_snake_case(item) for item in data]
+    else:
+        return data
+
 def parse_feature_group_json(feature_group_json: str):
     """Parse feature group JSON string"""
     feature_group_json = replace_boolean_string(feature_group_json)
     feature_group_dict = eval(feature_group_json)
     
-    # Create simple object from dict
+    # Convert camelCase keys to snake_case
+    feature_group_dict = convert_keys_to_snake_case(feature_group_dict)
+    
+    # Create simple object from dict with nested object support
     class FeatureGroupObject:
         def __init__(self, data):
-            self.__dict__.update(data)
+            for key, value in data.items():
+                if key == 'features' and isinstance(value, list):
+                    # Convert feature dicts to FeatureObjects
+                    setattr(self, key, [FeatureObject(item) if isinstance(item, dict) else item for item in value])
+                elif isinstance(value, dict):
+                    setattr(self, key, FeatureObject(value))
+                elif isinstance(value, list):
+                    setattr(self, key, [FeatureObject(item) if isinstance(item, dict) else item for item in value])
+                else:
+                    setattr(self, key, value)
         
         def to_dict(self):
-            return self.__dict__
+            result = {}
+            for key, value in self.__dict__.items():
+                if isinstance(value, FeatureObject):
+                    result[key] = value.to_dict()
+                elif isinstance(value, list):
+                    result[key] = [item.to_dict() if isinstance(item, FeatureObject) else item for item in value]
+                else:
+                    result[key] = value
+            return result
     
     return FeatureGroupObject(feature_group_dict)
 

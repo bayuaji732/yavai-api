@@ -3,6 +3,7 @@ import tempfile
 import requests
 import numpy as np
 import pandas as pd
+import logging
 from typing import List, Tuple, Optional
 from PIL import Image
 from pillow_heif import register_heif_opener
@@ -10,6 +11,10 @@ import cv2
 import dlib
 import spacy
 from app.core import config
+
+# Setup Logger
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 IMAGE_TYPES = {'jpg', 'jpeg', 'png', 'bmp', 'tiff', 'tif', 'heic', 'heif', 'webp'}
 DATA_TYPES = {'csv', 'tsv', 'txt', 'xls', 'xlsx', 'sav'}
@@ -25,21 +30,21 @@ class PrivacyService:
         """Load spaCy model for PII detection"""
         SPACY_MODEL = "en_core_web_sm"
         try:
+            logger.info(f"Loading spaCy model: {SPACY_MODEL}")
             return spacy.load(SPACY_MODEL)
         except OSError:
-            print(f"Attempting to download spaCy model '{SPACY_MODEL}'...")
+            logger.info(f"Model '{SPACY_MODEL}' not found. Attempting download...")
             try:
                 spacy.cli.download(SPACY_MODEL)
                 return spacy.load(SPACY_MODEL)
             except Exception as e:
-                print(
-                f"Warning: Failed to load spaCy model '{SPACY_MODEL}'. "
-                f"PII detection will be disabled. Error: {e}"
-                )
+                logger.error(f"Failed to load spaCy model '{SPACY_MODEL}'. PII detection disabled. Error: {e}")
                 return None
     
     def process_file(self, file_item_id: str, file_type: str, token: str) -> Tuple[str, str, str, List]:
         """Process file for privacy detection"""
+        logger.info(f"Starting privacy processing for file_id: {file_item_id} (Type: {file_type})")
+        
         # Determine processing category
         if file_type in IMAGE_TYPES:
             processing_category = "image"
@@ -48,10 +53,15 @@ class PrivacyService:
             processing_category = "data"
             temp_suffix = f".{file_type}"
         else:
-            return "unknown", "unknown", "Unsupported file type", []
+            logger.warning(f"Unsupported file type: {file_type}")
+            return "unknown", "unknown", f"Unsupported file type: {file_type}", []
         
         # Download file
-        temp_file_path = self._download_file(file_item_id, processing_category, token, temp_suffix)
+        try:
+            temp_file_path = self._download_file(file_item_id, processing_category, token, temp_suffix)
+        except Exception as e:
+            logger.error(f"Download failed for {file_item_id}: {str(e)}")
+            return processing_category, "unknown", f"Download failed: {str(e)}", []
         
         try:
             if processing_category == "image":
@@ -61,6 +71,7 @@ class PrivacyService:
         finally:
             if os.path.exists(temp_file_path):
                 os.remove(temp_file_path)
+                logger.debug(f"Cleaned up temp file: {temp_file_path}")
     
     def _download_file(self, file_item_id: str, processing_category: str, token: str, suffix: str) -> str:
         """Download file from external service"""
@@ -71,6 +82,7 @@ class PrivacyService:
         else:
             url = f"{config.YAVAI_API_BASE_URL}/dataset-management/api/v1/files/{file_item_id}/download"
         
+        logger.debug(f"Downloading from URL: {url}")
         response = requests.get(url, stream=True, verify=False, headers=headers)
         response.raise_for_status()
         
@@ -79,6 +91,7 @@ class PrivacyService:
             for chunk in response.iter_content(chunk_size=8192):
                 tmp_file.write(chunk)
         
+        logger.info(f"File downloaded successfully to {temp_file_path}")
         return temp_file_path
     
     def _process_image(self, file_path: str) -> Tuple[str, str, str, List]:
@@ -88,16 +101,25 @@ class PrivacyService:
             with Image.open(file_path) as pil_img:
                 pil_img_rgb = pil_img.convert("RGB")
                 image_np = np.array(pil_img_rgb, dtype=np.uint8).copy()
+                
                 coordinates = self._detect_eyes(image_np)
+                
                 if coordinates is None:
-                    return "image", "eye_detection", "Error: Eye detection system failed", []
+                    msg = "Error: Internal failure during eye detection logic"
+                    logger.error(msg)
+                    return "image", "eye_detection", msg, []
                 elif not coordinates:
-                    return "image", "eye_detection", "No faces or eye landmarks detected", []
+                    msg = "Analysis complete: No faces or eye landmarks detected"
+                    logger.info(msg)
+                    return "image", "eye_detection", msg, []
                 else:
-                    return "image", "eye_detection", f"Detected {len(coordinates)} eye region(s)", coordinates
+                    msg = f"Success: Detected {len(coordinates)} eye region(s)"
+                    logger.info(msg)
+                    return "image", "eye_detection", msg, coordinates
+                    
         except Exception as e:
-            print(f"Error processing image: {e}")
-            return "image", "eye_detection", "Error processing image file", []
+            logger.exception(f"Critical error processing image file: {e}")
+            return "image", "eye_detection", f"Processing Error: {str(e)}", []
     
     def _process_data(self, file_path: str) -> Tuple[str, str, str, List]:
         """Process data file for PII detection"""
@@ -105,24 +127,28 @@ class PrivacyService:
             df = self._read_data_file(file_path)
             
             if df is None:
-                return "data", "pii_detection", "Error reading data file", []
+                msg = "Error: Could not read data file (invalid format or empty)"
+                logger.error(msg)
+                return "data", "pii_detection", msg, []
             
             pii_columns = self._detect_pii_columns(df)
             
             if not pii_columns:
-                return "data", "pii_detection", "No PII columns detected", []
+                return "data", "pii_detection", "Analysis complete: No PII columns detected", []
             else:
-                return "data", "pii_detection", f"Detected {len(pii_columns)} PII column(s)", pii_columns
+                return "data", "pii_detection", f"Success: Detected {len(pii_columns)} PII column(s)", pii_columns
         except Exception as e:
-            print(f"Error processing data file: {e}")
-            return "data", "pii_detection", "Error processing data file", []
+            logger.exception(f"Critical error processing data file: {e}")
+            return "data", "pii_detection", f"Processing Error: {str(e)}", []
 
     def _read_data_file(self, file_path: str) -> Optional[pd.DataFrame]:
         """Read data file into pandas DataFrame"""
         if not os.path.exists(file_path):
+            logger.error(f"File path does not exist: {file_path}")
             return None
         
         file_extension = os.path.splitext(file_path)[1].lower()
+        logger.debug(f"Reading data file with extension: {file_extension}")
         
         try:
             if file_extension == '.csv':
@@ -130,7 +156,6 @@ class PrivacyService:
             elif file_extension == '.tsv':
                 return pd.read_csv(file_path, sep='\t')
             elif file_extension in ['.txt', '.data', '']:
-                # Try different delimiters
                 for sep in ['\t', ',', r'\s+']:
                     try:
                         return pd.read_csv(file_path, sep=sep)
@@ -144,18 +169,25 @@ class PrivacyService:
                 df, _ = pyreadstat.read_sav(file_path)
                 return df
             else:
+                logger.warning(f"Unhandled data file extension: {file_extension}")
                 return None
         except Exception as e:
-            print(f"Error reading file: {e}")
+            logger.error(f"Pandas read error: {e}")
             return None
 
     def _detect_pii_columns(self, df: pd.DataFrame) -> List[str]:
         """Detect PII columns in DataFrame"""
-        if df.empty or self.nlp is None:
+        if df.empty:
+            logger.warning("DataFrame is empty, skipping PII detection")
+            return []
+        if self.nlp is None:
+            logger.warning("SpaCy model not loaded, skipping PII detection")
             return []
         
         pii_columns = []
         pii_labels = ["PERSON", "GPE", "LOC", "EMAIL", "PHONE_NUMBER", "SSN", "CREDIT_CARD", "IP_ADDRESS"]
+        
+        logger.info(f"Scanning {len(df.columns)} columns for PII...")
         
         for column_name in df.columns:
             non_null_series = df[column_name].dropna()
@@ -180,6 +212,7 @@ class PrivacyService:
                 total_count += 1
             
             if total_count > 0 and (pii_count / total_count) >= DEFAULT_PII_THRESHOLD:
+                logger.info(f"PII Detected in column: {column_name}")
                 pii_columns.append(column_name)
         
         return pii_columns
@@ -194,33 +227,55 @@ class PrivacyService:
                 image_bgr = cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR)
                 gray = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2GRAY)
             else:
+                logger.error(f"Invalid image shape for detection: {image_np.shape}")
                 return None
             
             # Try dlib first
+            logger.info("Attempting eye detection via Dlib...")
             coordinates = self._detect_with_dlib(gray, image_np.shape)
             if coordinates:
+                logger.info(f"Dlib detection successful. Found {len(coordinates)} regions.")
                 return coordinates
             
             # Fallback to OpenCV
-            return self._detect_with_opencv(gray, image_np.shape)
+            logger.info("Dlib returned no results or failed. Falling back to OpenCV Haar Cascades...")
+            coordinates = self._detect_with_opencv(gray, image_np.shape)
+            if coordinates:
+                logger.info(f"OpenCV detection successful. Found {len(coordinates)} regions.")
+            else:
+                logger.info("OpenCV detection returned no results.")
+            
+            return coordinates
             
         except Exception as e:
-            print(f"Error in eye detection: {e}")
+            logger.exception(f"Unexpected error in _detect_eyes: {e}")
             return None
 
     def _detect_with_dlib(self, gray, image_shape) -> List[Tuple[int, int, int, int]]:
-        """Detect eyes using dlib"""
+        """Detect eyes using dlib with explicit logging"""
         try:
             detector = dlib.get_frontal_face_detector()
-            predictor_path = f"/app/ml_models/{config.SHAPE_PREDICTOR_PATH}"
+            predictor_path = config.SHAPE_PREDICTOR_FULL_PATH
+            
+            # --- Added Logging for Troubleshooting ---
+            logger.debug(f"Looking for Dlib Shape Predictor at: {predictor_path}")
             
             if not os.path.exists(predictor_path):
+                logger.error(f"Dlib Shape Predictor file NOT FOUND at: {predictor_path}. Check config and file system.")
                 return []
             
-            predictor = dlib.shape_predictor(predictor_path)
+            try:
+                predictor = dlib.shape_predictor(predictor_path)
+                logger.debug("Dlib Shape Predictor loaded successfully.")
+            except Exception as e:
+                logger.error(f"File exists but Dlib failed to load predictor: {e}")
+                return []
+            # -----------------------------------------
+
             faces = detector(gray, 1)
             
             if not faces:
+                logger.debug("Dlib: No faces detected in image.")
                 return []
             
             coordinates = []
@@ -236,15 +291,23 @@ class PrivacyService:
                         coordinates.append(bbox)
             
             return coordinates
-        except Exception:
+        except Exception as e:
+            logger.exception(f"Critical error during Dlib detection process: {e}")
             return []
 
     def _detect_with_opencv(self, gray, image_shape) -> List[Tuple[int, int, int, int]]:
         """Detect eyes using OpenCV Haar Cascades"""
         try:
             cascade_path = cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'
-            face_cascade = cv2.CascadeClassifier(cascade_path)
+            if not os.path.exists(cascade_path):
+                logger.error(f"OpenCV Cascade file missing: {cascade_path}")
+                # Try to load without checking path (sometimes internal to cv2)
             
+            face_cascade = cv2.CascadeClassifier(cascade_path)
+            if face_cascade.empty():
+                logger.error("Failed to load OpenCV CascadeClassifier")
+                return []
+                
             faces = face_cascade.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=5, minSize=(30, 30))
             
             if len(faces) == 0:
@@ -257,7 +320,8 @@ class PrivacyService:
                     coordinates.append(eye_coords)
             
             return coordinates
-        except Exception:
+        except Exception as e:
+            logger.error(f"Error in OpenCV detection: {e}")
             return []
 
     def _calculate_bbox(self, points, image_shape, padding=0.15) -> Optional[Tuple[int, int, int, int]]:
@@ -282,7 +346,7 @@ class PrivacyService:
         x2 = min(image_shape[1], max_x + pad_x)
         y2 = min(image_shape[0], max_y + pad_y)
         
-        return (x1, y1, x2, y2)
+        return (int(x1), int(y1), int(x2), int(y2))
 
     def _estimate_eye_region(self, x, y, w, h, image_shape) -> Tuple[int, int, int, int]:
         """Estimate eye region from face bounding box"""
@@ -302,4 +366,4 @@ class PrivacyService:
         x2 = min(image_shape[1], eye_x_end + pad_x)
         y2 = min(image_shape[0], eye_y_end + pad_y)
         
-        return (x1, y1, x2, y2)
+        return (int(x1), int(y1), int(x2), int(y2))

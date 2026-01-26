@@ -118,7 +118,7 @@ async def get_dataset_profiling_status(file_id: str, table_name: str = "dataset"
     - None: Not found or error
     """
     try:
-        db_service = DataProfilingService()
+        db_service = DataPrepDBService()
         status = db_service.get_dataset_status(table_name, file_id)
         
         if status is None:
@@ -153,7 +153,7 @@ async def get_list_datasets(
     - **offset**: Number of results to skip
     """
     try:
-        db_service = DataProfilingService()
+        db_service = DataPrepDBService()
         datasets = db_service.list_datasets(table_name, status, limit, offset)
         
         return {
