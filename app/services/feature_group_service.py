@@ -34,6 +34,8 @@ class FeatureGroupService:
         spark_dataframe = self._select_columns(spark_dataframe, feature_group_object)
         spark_dataframe = self._extract_features(spark_session, spark_dataframe, feature_group_object)
         
+        spark_dataframe = spark_dataframe.toDF(*spark_dataframe.columns)
+        
         # Save to Hive
         spark_service.save_to_hive(spark_session, spark_dataframe, feature_group_object)
         
