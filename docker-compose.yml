@@ -1,10 +1,66 @@
+version: '3'
+
 services:
-  api:
-    build: .
-    ports:
-      - "3304:3304"
-    env_file:
-      - .env
-    volumes:
-      - ./:/app
-    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    yavai-api:
+        image: end2endai/yavai-api:0.3.0
+        build:
+            context: ./
+            dockerfile: Dockerfile
+        working_dir: /app
+
+        # ── Environment ──────────────────────────────────────────────────────
+        # All secrets and config live in .env — nothing hardcoded here.
+        env_file:
+            - .env
+        environment:
+            - PYTHONUNBUFFERED=1
+
+        # ── Networking ───────────────────────────────────────────────────────
+        # host mode is required so the container can reach the Kerberos KDC,
+        # Hive metastore, HDFS namenode, and other cluster services by their
+        # real hostnames without extra port-mapping gymnastics.
+        network_mode: "host"
+
+        # Cluster node hostname → IP mappings (mirrors old setup)
+        extra_hosts:
+            - "pip3devsmlmstdbs.labs247.com:172.20.3.57"
+            - "pip3devsmlwrk1dbs.labs247.com:172.20.3.58"
+            - "pip3devsmlwrk2dbs.labs247.com:172.20.3.59"
+            - "vm02gpu.labs247.com:172.20.3.60"
+            - "WIN-MVUNF9O35J5.LABS247.COM:172.23.0.110"
+
+        # ── Host-mounted volumes ─────────────────────────────────────────────
+        # Java, Spark, and Hadoop are NOT installed inside the image.
+        # They are mounted from the host so the container uses the exact same
+        # binaries and configs as the rest of the cluster.
+        volumes:
+            # Java JDK (JAVA_HOME)
+            - /usr/java/jdk1.8.0_202-amd64:/usr/java/jdk1.8.0_202-amd64:ro
+            - /usr/lib/jvm/java-1.8.0-openjdk:/usr/lib/jvm/java-1.8.0-openjdk:ro
+            - /usr/share/javazi-1.8:/usr/share/javazi-1.8:ro
+
+            # Spark + Hadoop stack (SPARK_HOME, HIVE_METASTORE_JARS, etc.)
+            - /usr/yava:/usr/yava:ro
+
+            # Hadoop / Hive configuration (HADOOP_CONF_DIR)
+            - /etc/spark2:/etc/spark2:ro
+            - /etc/hadoop/conf:/etc/hadoop/conf:ro
+            - /etc/hadoop/3.1.0.0-0000:/etc/hadoop/3.1.0.0-0000:ro
+
+            # Ozone S3 JARs (used by Spark S3A connector)
+            - /opt/ozone-jar:/opt/ozone-jar:ro
+
+            # Kerberos: config file + keytabs (used by kinit cron in entrypoint)
+            - /etc/krb5.conf:/etc/krb5.conf:ro
+            - /etc/security/keytabs:/etc/security/keytabs:ro
+
+            # Spark ivy2 cache — avoids re-downloading JARs on every container restart
+            - /root/.ivy2:/root/.ivy2
+
+            # Application data directory (dataset files, profiling output, etc.)
+            - /data/dataset_management:/data/dataset_management
+
+            # Host passwd needed by some Hadoop/Kerberos libs to resolve UIDs
+            - /etc/passwd:/etc/passwd:ro
+
+        restart: always

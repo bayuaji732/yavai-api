@@ -27,7 +27,24 @@ SPARK_HADOOP_HIVE_METASTORE_URIS = os.environ.get("SPARK_HADOOP_HIVE_METASTORE_U
 SPARK_KERBEROS_KEYTAB = os.environ.get("SPARK_KERBEROS_KEYTAB")
 SPARK_KERBEROS_PRINCIPAL = os.environ.get("SPARK_KERBEROS_PRINCIPAL")
 SPARK_EXTRACLASSPATH = os.environ.get("SPARK_EXTRACLASSPATH")
-    
+
+# ── Iceberg ─────────────────────────────────────────────────────────────────
+# JAR must match your PySpark version (pyspark==3.0.2 → runtime-3.0_2.12)
+SPARK_JARS_ICEBERG: str = os.getenv(
+    "SPARK_JARS_ICEBERG",
+    "org.apache.iceberg:iceberg-spark-runtime-3.0_2.12:0.14.1"
+)
+# REST catalog endpoint — your standalone iceberg-rest-fixture container
+ICEBERG_REST_URI: str    = os.getenv("ICEBERG_REST_URI",    "http://172.20.3.111:8181")
+# The catalog name you reference in Spark SQL (e.g. rest.default.my_table)
+ICEBERG_CATALOG_NAME: str = os.getenv("ICEBERG_CATALOG_NAME", "rest")
+# Namespace / database inside the catalog
+ICEBERG_NAMESPACE: str   = os.getenv("ICEBERG_NAMESPACE",   "default")
+# Warehouse location — Ozone S3 bucket where Iceberg writes parquet files
+# Create the bucket first:  ozone sh bucket create /s3v/iceberg
+ICEBERG_WAREHOUSE: str   = os.getenv("ICEBERG_WAREHOUSE",   "s3a://iceberg/warehouse/")
+# ─────────────────────────────────────────────────────────────────────────────
+
 # HDFS
 HDFS_HOST = os.environ.get("HDFS_HOST")
 HDFS_NAME_NODE = os.environ.get("HDFS_NAME_NODE")
@@ -37,7 +54,7 @@ HIVE_DIR_PATH = os.environ.get("HIVE_DIR_PATH")
 HIVE_HIVESERVER2_JDBC_URL = os.environ.get("HIVE_HIVESERVER2_JDBC_URL")
 HIVE_METASTORE_JARS = os.environ.get("HIVE_METASTORE_JARS")
     
-# S3
+# S3 / Ozone
 S3_ACCESS_KEY = os.environ.get("S3_ACCESS_KEY")
 S3_SECRET_KEY = os.environ.get("S3_SECRET_KEY")
 S3_ENDPOINT = os.environ.get("S3_ENDPOINT")
@@ -48,10 +65,12 @@ JWT_TOKEN_KEY = os.environ.get("JWT_TOKEN_KEY")
 # DLIB Model
 SHAPE_PREDICTOR_PATH= os.environ.get("SHAPE_PREDICTOR_PATH")
 
-import os
 BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 ML_MODELS_DIR = os.path.join(BASE_DIR, "ml_models")
-SHAPE_PREDICTOR_FULL_PATH = os.path.join(ML_MODELS_DIR, SHAPE_PREDICTOR_PATH or "shape_predictor_68_face_landmarks.dat")
+SHAPE_PREDICTOR_FULL_PATH = os.path.join(
+    ML_MODELS_DIR, 
+    SHAPE_PREDICTOR_PATH or "shape_predictor_68_face_landmarks.dat"
+)
     
 # File settings
 URL: str = os.getenv("URL", "")
